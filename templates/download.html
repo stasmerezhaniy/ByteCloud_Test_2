@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Завантаження файлу з використанням JavaScript</title>
+</head>
+<body>
+
+  <h3>{{ domain_name_name }}, {{ domain_name_city }}, {{ domain_name_ip }}, {{ duration_first }} sec, {{ dt_first }}, http://{{ domain_name_ip }}/download/{{ filename }} </h3></br>
+  <h3>{{ domain_name_name }}-->{{ name_replicate_name_1 }}, {{ name_replicate_city_1 }}, {{ name_replicate_ip_1 }}, {{ name_replicate_duration_1 }} sec, {{ name_replicate_dt_1 }}, http://{{ name_replicate_domain_name_1 }}/download/{{ filename }}</h3></br>
+  <h3>{{ domain_name_name }}-->{{ name_replicate_name_2 }}, {{ name_replicate_city_2 }}, {{ name_replicate_ip_2 }}, {{ name_replicate_duration_2 }} sec, {{ name_replicate_dt_2 }}, http://{{ name_replicate_domain_name_2 }}/download/{{ filename }}</h3></br>
+  <button onclick="downloadFile()">Завантажити файл</button>
+
+
+  <script>
+    const xhr = new XMLHttpRequest();
+
+    let downloadButton = document.querySelector('button');
+
+    function downloadFile() {
+      // встановлюємо метод запиту та посилання для завантаження файлу
+      xhr.open('GET', '{{ link_url }}', true);
+
+      // встановлюємо функцію, яка буде викликана при завершенні завантаження
+      xhr.onload = function () {
+        // створюємо новий Blob об'єкт з вмістом завантаженого файлу
+        const blob = new Blob([xhr.response], { type: 'application/octet-stream' });
+
+        // створюємо посилання на Blob об'єкт
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = '{{ filename }}';
+        document.body.appendChild(link);
+
+        // автоматично клікаємо по посиланню для завантаження файлу
+        link.click();
+
+        // видаляємо посилання зі сторінки
+        document.body.removeChild(link);
+
+        // обчислюємо час, за який було завантажено файл
+        let date = new Date()
+        const downloadTime = (performance.now() - startTime) / 1000;
+        console.log(`Файл було завантажено за ${downloadTime} секунд`);
+        document.body.innerHTML += `<p>'{{uploaded_host_name}}', '{{uploaded_host_city}}', '{{uploaded_host_ip}}', ${downloadTime.toFixed(2)} sec, ${date}</p>`;
+      };
+
+      // запам'ятовуємо час початку завантаження
+      const startTime = performance.now();
+
+      // відправляємо запит на сервер
+      xhr.send();
+    }
+  </script>
+
+</body>
+</html>
